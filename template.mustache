@@ -1,0 +1,36 @@
+global
+  log 127.0.0.1 local0
+  log 127.0.0.1 local1 notice
+  chroot      /var/lib/haproxy
+  user        haproxy
+  group       haproxy
+  stats socket /tmp/haproxy.sock level admin
+
+defaults
+  mode                    http
+  log                     global
+  option                  httplog
+  option                  dontlognull
+  contimeout 5000
+  clitimeout 50000
+  srvtimeout 50000
+
+frontend http-in
+  bind *:80
+{{#frontends}}
+  acl dom_{{subdomain}} hdr_dom
+  {{#acls}}
+  acl path_{{.}} path_beg /{{.}}
+  {{/acls}}
+  {{#acls}}
+  use_backend {{domain}}-{{.}} if dom_{{subdomain}} path_{{.}}
+  {{/acls}}
+{{/frontends}}
+
+{{#backends}}
+backend {{name}}
+  {{#servers}}
+  server main {{server}}:{{port}}
+  {{/servers}}
+
+{{/backends}}
