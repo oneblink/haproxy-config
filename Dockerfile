@@ -6,7 +6,7 @@ RUN apt-get install nodejs npm nodejs-legacy -y
 
 RUN apt-get install haproxy -y
 
-ADD . /opt/haproxy-config
+ADD config /opt/haproxy-config/
 
 WORKDIR /opt/haproxy-config
 

@@ -9,16 +9,21 @@ global
 defaults
   mode                    http
   log                     global
+  option                  http-server-close
   option                  httplog
   option                  dontlognull
   contimeout 5000
   clitimeout 50000
   srvtimeout 50000
 
+listen stats :9001
+  stats enable
+  stats uri /
+
 frontend http-in
-  bind *:80
+  bind *:9000
 {{#frontends}}
-  acl dom_{{subdomain}} hdr_dom
+  acl dom_{{subdomain}} hdr_beg(host) {{subdomain}}
   {{#acls}}
   acl path_{{.}} path_beg /{{.}}
   {{/acls}}
@@ -30,7 +35,7 @@ frontend http-in
 {{#backends}}
 backend {{name}}
   {{#servers}}
-  server main {{server}}:{{port}}
+  server main {{server}}:{{port}} check
   {{/servers}}
 
 {{/backends}}

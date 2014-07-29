@@ -1,0 +1,11 @@
+[Unit]
+Description=HAProxy
+After=docker.service
+Requires=docker.service
+
+[Service]
+ExecStart=/usr/bin/docker run --rm --name haproxy-server-01 -p 9000:9000 -p 9001:9001 blinkmobile/haproxy
+ExecStop=/usr/bin/docker stop haproxy-server-01
+
+[X-Fleet]
+X-Conflicts=haproxy-server.*.service

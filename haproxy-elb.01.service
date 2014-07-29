@@ -1,0 +1,10 @@
+[Unit]
+Description=HAProxy
+BindsTo=haproxy-server.01.service
+
+[Service]
+ExecStart=/usr/bin/docker run --rm --name haproxy-elb-01 -e AWS_ACCESS_KEY=-e AWS_SECRET_KEY= -e AWS_REGION= -e ELB_NAME= coreos/elb-presence
+ExecStop=/usr/bin/docker stop haproxy-elb-01
+
+[X-Fleet]
+X-ConditionMachineOf=haproxy-server.01.service

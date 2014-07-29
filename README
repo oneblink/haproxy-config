@@ -1,0 +1,8 @@
+Notes
+
+Perhaps we would be better if docker monitored HAProxy instead of the config app??
+
+How the hell do we route _R_ to the right place????
+
+
+Need to secure ETCD to protect it from containers

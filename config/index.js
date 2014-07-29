@@ -71,43 +71,47 @@ function processData (callback) {
 
     templateData= {};
 
-    nodes = (_.flatten(_.pluck(data.node.nodes, 'nodes')));
+    try {
+      nodes = (_.flatten(_.pluck(data.node.nodes, 'nodes')));
 
-    templateData.backends = _.map(nodes, function (value) {
-      var key, servers;
+      templateData.backends = _.map(nodes, function (value) {
+        var key, servers;
 
-      key = value.key.split('/');
-      servers = _.map(value.nodes, function (value) {
-        if (value.nodes[0].key.split('/')[6] === 'server') {
-          return {
-            server: value.nodes[0].value,
-            port: value.nodes[1].value
+        key = value.key.split('/');
+        servers = _.map(value.nodes, function (value) {
+          if (value.nodes[0].key.split('/')[6] === 'server') {
+            return {
+              server: value.nodes[0].value,
+              port: value.nodes[1].value
+            }
           }
-        }
-        return {
-          server: value.nodes[1].value,
-          port: value.nodes[0].value
-        }
-      })
-
-      return {
-        name: key[3] + '-' + key[4],
-        servers: servers
-      }
-    });
-
-    templateData.frontends = _.uniq(_.map(data.node.nodes, function (value) {
-      return {
-        domain: value.key.split('/')[3],
-        subdomain: value.key.split('/')[3].split('.')[0],
-        acls: _.map(_.pluck(value.nodes, 'key'), function (value) {
-          return value.split('/')[4]
+          return {
+            server: value.nodes[1].value,
+            port: value.nodes[0].value
+          }
         })
-      }
-    }));
 
-    //console.log(templateData);
-    writeTemplate (templateData, callback);
+        return {
+          name: key[3] + '-' + key[4],
+          servers: servers
+        }
+      });
+
+      templateData.frontends = _.uniq(_.map(data.node.nodes, function (value) {
+        return {
+          domain: value.key.split('/')[3],
+          subdomain: value.key.split('/')[3].split('.')[0],
+          acls: _.map(_.pluck(value.nodes, 'key'), function (value) {
+            return value.split('/')[4]
+          })
+        }
+      }));
+
+      //console.log(templateData);
+      writeTemplate (templateData, callback);
+    } catch (e) {
+      console.log(Date.now() + ': ' + 'The retreived config could not be transformed into a valid config');
+    }
   };
 }
 
